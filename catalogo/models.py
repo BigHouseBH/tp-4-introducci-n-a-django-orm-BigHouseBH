@@ -5,6 +5,12 @@ from django.utils import timezone
 
 
 class Autor(models.Model):
+    
+    
+    #Segun la Ia, al definir los objetos que componen la clase, 
+    # se definen [tipo de dato]Field, dado que Field se traduce a campo.:
+    #la operacion X=models.CharField se puede traducir a  X es campo de "Chars"(referido a memoria)
+    
     """
     Representa a un autor/a.
     Requerido: nombre, email único, biografía opcional.
@@ -18,7 +24,9 @@ class Autor(models.Model):
     # email    → EmailField (unique=True)
     # biografia → TextField (blank=True para hacerlo opcional)
 
-    pass
+    nombre =models.CharField(max_length=120)
+    email=models.EmailField(unique=True)#indica que este dato no se puede repetir, unique=unico
+    biografia=models.TextField(blank=True)#blank=blanco, basicamente indicas que permite texto en blanco(vacio)
 
     # Opcional: definir __str__ para que sea legible en el admin y en el shell
     # def __str__(self) -> str:
