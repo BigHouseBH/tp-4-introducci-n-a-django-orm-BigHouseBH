@@ -38,7 +38,7 @@ class Autor(models.Model):
     # por ende el metodo "def __str__(self) -> str:" 
     # define que imprime al tratar al objeto como un string,
     #Nota:note que siempre se emplea la sintaxis  "def__[nobre de metodo]__(self)"
-    #para definir un comportamiento especial. Ej: def__Init
+    #para definir un comportamiento especial. Ej:
     
     def __str__(self) -> str:
         return self.nombre
