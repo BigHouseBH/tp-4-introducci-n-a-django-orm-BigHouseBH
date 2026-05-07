@@ -31,6 +31,18 @@ class Autor(models.Model):
     # Opcional: definir __str__ para que sea legible en el admin y en el shell
     # def __str__(self) -> str:
     #     return self.nombre
+    
+    
+    #Para entenderlo debemos considerar que en python no se emplean un toString()
+    #simplemente se escirve print([nombre de objeto]) 
+    # por ende el metodo "def __str__(self) -> str:" 
+    # define que imprime al tratar al objeto como un string,
+    #Nota:note que siempre se emplea la sintaxis  "def__[nobre de metodo]__(self)"
+    #para definir un comportamiento especial. Ej: def__Init
+    
+    def __str__(self) -> str:
+        return self.nombre
+    
 
 
 class Categoria(models.Model):
@@ -41,10 +53,13 @@ class Categoria(models.Model):
 
     # TODO: implementar el campo nombre (unique=True)
 
-    pass
+    nombreCategoria=models.CharField(max_length=120, unique=True)
 
     # def __str__(self) -> str:
     #     return self.nombre
+    
+    def __str__(self)->str:
+        return self.nombreCategoria
 
 
 class Libro(models.Model):
@@ -61,12 +76,41 @@ class Libro(models.Model):
     # autor           → ForeignKey(Autor, on_delete=models.PROTECT)
     # categorias      → ManyToManyField(Categoria)
     #
+    
+    titulo = models.CharField(max_length=300)
+    isbn = models.CharField(max_length=13, unique=True)
+    fecha_publicacion = models.DateField()#Campo de dia
+    cantidad_total = models.PositiveIntegerField()
+    autor = models.ForeignKey(Autor, on_delete=models.PROTECT)
+    #Foreign=Extranjero
+    #key=clave
+    #ForeignKey se traduce a "clave extranjera",
+    # es decir, un campo que referencia a otro modelo (en este caso, Autor).
+    categorias = models.ManyToManyField(Categoria)
+    #Esto es como la cardinalidad que aprendi en ISW1, basicamente 
+    # un libro puede tener varias categorias 
+    # y una categoria puede tener varios libros, p
+    # or eso se emplea ManyToManyField, que se traduce a "muchos a muchos",
+    # es decir, una relacion de muchos a muchos entre Libro y Categoria.
+    
     # Preguntas guía:
     # ¿Qué pasa si eliminás un autor que tiene libros? (PROTECT vs CASCADE)
     # ¿Por qué isbn debe ser único?
 
-    pass
-
+    #Es importante definir que ocurre al intentar eliminar un obj
+    #on_delete="en eliminacion"
+    #model.PROTECT: impide eliminar el objeto que es referenciado por otro objeto.
+    #model.CASCADE: elimina en cascada, es decir, elimina el objeto
+    # y todos los objetos que lo referencian.
+    
+    
+    #ISBN = International Standard Book Number 
+    #(Número Estándar Internacional de Libros)
+    #Es un código único que identifica cada libro a nivel mundial(una clave UNICA)
+    
+    
+    
+    
     def prestamos_activos(self) -> int:
         """
         Retorna la cantidad de préstamos activos (fecha_devolucion IS NULL).
@@ -76,7 +120,17 @@ class Libro(models.Model):
         # TODO: implementar con ORM usando filter sobre los préstamos relacionados
         # Pista: self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
         #        (o el related_name que hayas definido en Prestamo.libro)
-        raise NotImplementedError
+        
+        
+        # Django "lee" la convención y crea métodos automáticos,
+        #es decir que en funcion de como llame a los objetos,
+        #Django crea metodos personalizados automaticamente,
+        #de esta forma se creo el metodo "prestamo_set"
+        
+
+        return self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
+    
+    
 
     def disponibles(self) -> int:
         """
@@ -84,12 +138,14 @@ class Libro(models.Model):
         cantidad_total - prestamos_activos()
         """
         # TODO: implementar
-        raise NotImplementedError
+        
+        return self.cantidad_total - self.prestamos_activos()
 
     def tiene_disponibles(self) -> bool:
         """Retorna True si hay al menos una copia disponible."""
         # TODO: implementar
-        raise NotImplementedError
+        
+        return (self.disponibles() > 0)
 
 
 class Prestamo(models.Model):
@@ -110,4 +166,11 @@ class Prestamo(models.Model):
     # Tip: podés usar default=timezone.now si querés fecha automática,
     #      o dejarlo sin default para que el test lo defina explícitamente.
 
-    pass
+    libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
+    nombre_prestatario = models.CharField(max_length=100)
+    fecha_prestamo = models.DateField(default=timezone.now)
+    fecha_devolucion = models.DateField(null=True, blank=True)#puede ser nulo o esta vacio
+
+    #CASCADE se emplea aqui porque si se elimina un libro, se eliminan todos los prestamos relacionados
+    #Se usa timexone.now para asignar la fecha actual automaticamnete
+    #sin recurir a cargar la fecha evidente manualmente
