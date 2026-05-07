@@ -53,13 +53,13 @@ class Categoria(models.Model):
 
     # TODO: implementar el campo nombre (unique=True)
 
-    nombreCategoria=models.CharField(max_length=120, unique=True)
+    nombre=models.CharField(max_length=120, unique=True)
 
     # def __str__(self) -> str:
     #     return self.nombre
     
     def __str__(self)->str:
-        return self.nombreCategoria
+        return self.nombre
 
 
 class Libro(models.Model):
