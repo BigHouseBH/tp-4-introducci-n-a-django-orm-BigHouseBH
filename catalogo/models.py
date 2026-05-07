@@ -173,4 +173,5 @@ class Prestamo(models.Model):
 
     #CASCADE se emplea aqui porque si se elimina un libro, se eliminan todos los prestamos relacionados
     #Se usa timexone.now para asignar la fecha actual automaticamnete
-    #sin recurir a cargar la fecha evidente manualmente
+    #sin recurir a cargar la fecha evidente manualmente"" 
+"" 
